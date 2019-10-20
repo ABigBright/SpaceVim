@@ -1,9 +1,9 @@
 "=============================================================================
 " manager.vim --- plugin manager for SpaceVim
-" Copyright (c) 2016-2017 Shidong Wang & Contributors
+" Copyright (c) 2016-2019 Shidong Wang & Contributors
 " Author: Shidong Wang < wsdjeg at 163.com >
 " URL: https://spacevim.org
-" License: MIT license
+" License: GPLv3 license
 "=============================================================================
 
 " Load SpaceVim api
@@ -15,8 +15,11 @@ let s:SYS = SpaceVim#api#import('system')
 
 " init values
 let s:plugins = []
+let s:failed_plugins = []
 let s:pulling_repos = {}
 let s:building_repos = {}
+let s:retry_cnt = get(g:, 'spacevim_update_retry_cnt', 3)
+let s:on_reinstall = 0
 " key : plugin name, value : buf line number in manager buffer.
 let s:ui_buf = {}
 let s:plugin_manager_buffer = 0
@@ -38,7 +41,7 @@ function! s:install_manager() abort
     "auto install neobundle
     if filereadable(expand(g:spacevim_plugin_bundle_dir)
           \ . 'neobundle.vim'. s:Fsep. 'README.md')
-      let g:spacevim_neobundle_installed = 1
+      let g:_spacevim_neobundle_installed = 1
     else
       if s:need_cmd('git')
         call s:VIM_CO.system([
@@ -47,7 +50,7 @@ function! s:install_manager() abort
               \ 'https://github.com/Shougo/neobundle.vim',
               \ expand(g:spacevim_plugin_bundle_dir) . 'neobundle.vim'
               \ ])
-        let g:spacevim_neobundle_installed = 1
+        let g:_spacevim_neobundle_installed = 1
       endif
     endif
     exec 'set runtimepath+='
@@ -59,7 +62,7 @@ function! s:install_manager() abort
           \ . join(['repos', 'github.com',
           \ 'Shougo', 'dein.vim', 'README.md'],
           \ s:Fsep))
-      let g:spacevim_dein_installed = 1
+      let g:_spacevim_dein_installed = 1
     else
       if s:need_cmd('git')
         call s:VIM_CO.system([
@@ -70,7 +73,7 @@ function! s:install_manager() abort
               \ . join(['repos', 'github.com',
               \ 'Shougo', 'dein.vim"'], s:Fsep)
               \ ])
-        let g:spacevim_dein_installed = 1
+        let g:_spacevim_dein_installed = 1
       endif
     endif
     exec 'set runtimepath+='. fnameescape(g:spacevim_plugin_bundle_dir)
@@ -79,7 +82,7 @@ function! s:install_manager() abort
   elseif g:spacevim_plugin_manager ==# 'vim-plug'
     "auto install vim-plug
     if filereadable(expand('~/.cache/vim-plug/autoload/plug.vim'))
-      let g:spacevim_vim_plug_installed = 1
+      let g:_spacevim_vim_plug_installed = 1
     else
       if s:need_cmd('curl')
 
@@ -90,7 +93,7 @@ function! s:install_manager() abort
               \ '--create-dirs',
               \ 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
               \ ])
-        let g:spacevim_vim_plug_installed = 1
+        let g:_spacevim_vim_plug_installed = 1
       endif
     endif
     exec 'set runtimepath+=~/.cache/vim-plug/'
@@ -106,14 +109,25 @@ function! s:need_cmd(cmd) abort
   endif
 endfunction
 
-function! s:get_uninstalled_plugins() abort
-  return filter(values(dein#get()), '!isdirectory(v:val.path)')
-endfunction
+if g:spacevim_plugin_manager ==# 'neobundle'
+  function! s:get_uninstalled_plugins() abort
+    return filter(neobundle#config#get_neobundles(), '!isdirectory(v:val.path)')
+  endfunction
+elseif g:spacevim_plugin_manager ==# 'dein'
+  function! s:get_uninstalled_plugins() abort
+    return filter(values(dein#get()), '!isdirectory(v:val.path)')
+  endfunction
+endif
 
-
-function! SpaceVim#plugins#manager#reinstall(...) abort
-  call dein#reinstall(a:1)
-endfunction
+if g:spacevim_plugin_manager ==# 'neobundle'
+  function! SpaceVim#plugins#manager#reinstall(...) abort
+    call neobundle#commands#reinstall(a:1)
+  endfunction
+elseif g:spacevim_plugin_manager ==# 'dein'
+  function! SpaceVim#plugins#manager#reinstall(...) abort
+    call dein#reinstall(a:1)
+  endfunction
+endif
 
 
 " @vimlint(EVL102, 1, l:i)
@@ -142,7 +156,7 @@ function! SpaceVim#plugins#manager#install(...) abort
   if has('nvim')
     call s:set_buf_line(s:plugin_manager_buffer, 2, s:status_bar())
     call s:set_buf_line(s:plugin_manager_buffer, 3, '')
-  elseif has('python')
+  elseif s:VIM_CO.has('python')
     call s:append_buf_line(s:plugin_manager_buffer, 2, s:status_bar())
     call s:append_buf_line(s:plugin_manager_buffer, 3, '')
   else
@@ -152,7 +166,12 @@ function! SpaceVim#plugins#manager#install(...) abort
   let s:start_time = reltime()
   for i in range(g:spacevim_plugin_manager_processes)
     if !empty(s:plugins)
-      let repo = dein#get(s:LIST.shift(s:plugins))
+      let repo = {}
+      if g:spacevim_plugin_manager ==# 'dein'
+        let repo = dein#get(s:LIST.shift(s:plugins))
+      elseif g:spacevim_plugin_manager ==# 'neobundle'
+        let repo = neobundle#get(s:LIST.shift(s:plugins))
+      endif
       if !empty(repo)
         call s:install(repo)
       endif
@@ -184,8 +203,14 @@ function! SpaceVim#plugins#manager#update(...) abort
   if exists('s:recache_done')
     unlet s:recache_done
   endif
-  let s:plugins = a:0 == 0 ? sort(keys(dein#get())) : sort(copy(a:1))
-  if a:0 == 0
+  if g:spacevim_plugin_manager ==# 'dein'
+    let s:plugins = a:0 == 0 ? sort(keys(dein#get())) : sort(copy(a:1))
+  elseif g:spacevim_plugin_manager ==# 'neobundle'
+    let s:plugins = a:0 == 0 ? sort(map(neobundle#config#get_neobundles(), 'v:val.name')) : sort(copy(a:1))
+  elseif g:spacevim_plugin_manager ==# 'vim-plug'
+  endif
+  " make dein-ui only update SpaceVim for SpaceVim users
+  if a:0 == 0 && exists('g:spacevim_version')
     call add(s:plugins, 'SpaceVim')
   endif
   let s:total = len(s:plugins)
@@ -193,7 +218,7 @@ function! SpaceVim#plugins#manager#update(...) abort
   if has('nvim')
     call s:set_buf_line(s:plugin_manager_buffer, 2, s:status_bar())
     call s:set_buf_line(s:plugin_manager_buffer, 3, '')
-  elseif has('python')
+  elseif s:VIM_CO.has('python')
     call s:append_buf_line(s:plugin_manager_buffer, 2, s:status_bar())
     call s:append_buf_line(s:plugin_manager_buffer, 3, '')
   else
@@ -203,17 +228,26 @@ function! SpaceVim#plugins#manager#update(...) abort
   let s:start_time = reltime()
   for i in range(g:spacevim_plugin_manager_processes)
     if !empty(s:plugins)
-      let reponame = s:LIST.shift(s:plugins)
-      let repo = dein#get(reponame)
-      if !empty(repo)
+      let repo = {}
+      let reponame = ''
+      if g:spacevim_plugin_manager ==# 'dein'
+        let reponame = s:LIST.shift(s:plugins)
+        let repo = dein#get(reponame)
+      elseif g:spacevim_plugin_manager ==# 'neobundle'
+        let reponame = s:LIST.shift(s:plugins)
+        let repo = neobundle#get(reponame)
+      endif
+      if !empty(repo) && isdirectory(repo.path.'/.git')
         call s:pull(repo)
+      elseif !empty(repo) && !isdirectory(repo.path.'/.git')
+        call delete(repo.path, 'rf')
+        call s:install(repo)
       elseif reponame ==# 'SpaceVim'
         let repo = {
               \ 'name' : 'SpaceVim',
-              \ 'path' : fnamemodify(g:_spacevim_root_dir, ':h')
+              \ 'path' : g:_spacevim_root_dir
               \ }
         call s:pull(repo)
-
       endif
     endif
   endfor
@@ -239,9 +273,13 @@ function! s:on_pull_exit(id, data, event) abort
   else
     let id = a:id
   endif
+  if !has_key(s:pulling_repos, id)
+    return
+  endif
   if a:data == 0 && a:event ==# 'exit'
     call s:msg_on_updated_done(s:pulling_repos[id].name)
   else
+    call s:add_to_failed_list(s:pulling_repos[id].name)
     if a:data == 1
       call s:msg_on_updated_failed(s:pulling_repos[id].name, ' The plugin dir is dirty')
     else
@@ -261,13 +299,16 @@ function! s:on_pull_exit(id, data, event) abort
   call remove(s:pulling_repos, string(id))
   if !empty(s:plugins)
     let name = s:LIST.shift(s:plugins)
+    let repo = {}
     if name ==# 'SpaceVim'
       let repo = {
             \ 'name' : 'SpaceVim',
             \ 'path' : expand('~/.SpaceVim')
             \ }
-    else
+    elseif g:spacevim_plugin_manager ==# 'dein'
       let repo = dein#get(name)
+    elseif g:spacevim_plugin_manager ==# 'neobundle'
+      let repo = neobundle#get(name)
     endif
     call s:pull(repo)
   endif
@@ -280,9 +321,22 @@ function! s:recache_rtp(id) abort
     " TODO add elapsed time info.
     call s:set_buf_line(s:plugin_manager_buffer, 1, 'Updated. Elapsed time: '
           \ . split(reltimestr(reltime(s:start_time)))[0] . ' sec.')
-    let s:plugin_manager_buffer = 0
-    if g:spacevim_plugin_manager ==# 'dein'
-      call dein#recache_runtimepath()
+    let s:on_reinstall = 0
+    if len(s:failed_plugins) > 0 && s:retry_cnt > 0
+      call s:reinstall_update_failed()
+    elseif len(s:failed_plugins) > 0 && s:retry_cnt <= 0
+      " Reset retry cnt
+      let s:failed_plugins = []
+      let s:retry_cnt = get(g:, 'spacevim_update_retry_cnt')
+      let s:plugin_manager_buffer = 0
+      if g:spacevim_plugin_manager ==# 'dein'
+        call dein#recache_runtimepath()
+      endif
+    else
+      let s:plugin_manager_buffer = 0
+      if g:spacevim_plugin_manager ==# 'dein'
+        call dein#recache_runtimepath()
+      endif
     endif
     if a:id == -1
       let s:recache_done = 1
@@ -321,6 +375,7 @@ function! s:on_build_exit(id, data, event) abort
   if a:data == 0 && a:event ==# 'exit'
     call s:msg_on_build_done(s:building_repos[id].name)
   else
+    call s:add_to_failed_list(s:building_repos[id].name)
     call s:msg_on_build_failed(s:building_repos[id].name)
   endif
   let s:pct_done += 1
@@ -337,9 +392,13 @@ function! s:on_install_exit(id, data, event) abort
   else
     let id = a:id
   endif
+  if !has_key(s:pulling_repos, id)
+    return
+  endif
   if a:data == 0 && a:event ==# 'exit'
     call s:msg_on_install_done(s:pulling_repos[id].name)
   else
+    call s:add_to_failed_list(s:pulling_repos[id].name)
     call s:msg_on_install_failed(s:pulling_repos[id].name)
   endif
   if get(s:pulling_repos[id], 'rev', '') !=# ''
@@ -349,12 +408,16 @@ function! s:on_install_exit(id, data, event) abort
     call s:build(s:pulling_repos[id])
   else
     let s:pct_done += 1
-    call s:set_buf_line(s:plugin_manager_buffer, 1, 'Updating plugins (' . s:pct_done . '/' . s:total . ')')
+    call s:set_buf_line(s:plugin_manager_buffer, 1, 'Installing plugins (' . s:pct_done . '/' . s:total . ')')
     call s:set_buf_line(s:plugin_manager_buffer, 2, s:status_bar())
   endif
   call remove(s:pulling_repos, string(id))
   if !empty(s:plugins)
-    call s:install(dein#get(s:LIST.shift(s:plugins)))
+    if g:spacevim_plugin_manager ==# 'dein'
+      call s:install(dein#get(s:LIST.shift(s:plugins)))
+    elseif g:spacevim_plugin_manager ==# 'neobundle'
+      call s:install(neobundle#get(s:LIST.shift(s:plugins)))
+    endif
   endif
   call s:recache_rtp(a:id)
 endfunction
@@ -379,6 +442,8 @@ function! s:pull(repo) abort
     call s:msg_on_start(a:repo.name)
     redraw!
     call s:JOB.start(argv,{
+          \ 'on_stderr' : function('s:on_install_stdout'),
+          \ 'cwd' : a:repo.path,
           \ 'on_exit' : function('s:on_pull_exit')
           \ })
 
@@ -388,8 +453,12 @@ endfunction
 function! s:install(repo) abort
   let s:pct += 1
   let s:ui_buf[a:repo.name] = s:pct
-  let url = 'https://github.com/' . a:repo.repo
-  let argv = ['git', 'clone', '--recursive', '--progress', url, a:repo.path]
+  let url = 'https://github.com/' . (has_key(a:repo, 'repo') ? a:repo.repo : a:repo.orig_path)
+  if get(a:repo, 'rev', '') !=# ''
+    let argv = ['git', 'clone', '--recursive', '--progress', url, a:repo.path]
+  else
+    let argv = ['git', 'clone', '--depth=1', '--recursive', '--progress', url, a:repo.path]
+  endif
   if s:JOB.vim_job || s:JOB.nvim_job
     let jobid = s:JOB.start(argv,{
           \ 'on_stderr' : function('s:on_install_stdout'),
@@ -459,7 +528,7 @@ if has('nvim')
   function! s:msg_on_install_start(name) abort
     call s:set_buf_line(s:plugin_manager_buffer, s:ui_buf[a:name] + 3, '+ ' . a:name . ': Installing...')
   endfunction
-elseif has('python')
+elseif s:VIM_CO.has('python')
   function! s:msg_on_start(name) abort
     call s:append_buf_line(s:plugin_manager_buffer, s:ui_buf[a:name] + 3, '+ ' . a:name . ': Updating...')
   endfunction
@@ -522,14 +591,43 @@ function! s:msg_on_build_failed(name, ...) abort
   endif
 endfunction
 
+" - foo.vim: Updating failed.
+function! s:add_to_failed_list(name) abort
+  if index(s:failed_plugins, a:name) < 0
+    call add(s:failed_plugins, a:name)
+  endif
+endfunction
+
+function! s:reinstall_update_failed() abort
+  if len(s:failed_plugins) > 0 && s:retry_cnt > 0
+    " close plugin manager
+    let s:on_reinstall = 1
+    call SpaceVim#logger#warn(' [ plug manager ] Reinstalling Failed Plugins. Remaining Retries: '.s:retry_cnt)
+    call SpaceVim#plugins#manager#update(s:failed_plugins)
+    let s:failed_plugins = []
+    let s:retry_cnt -= 1
+  endif
+endfunction
+
 function! s:new_window() abort
-  if s:plugin_manager_buffer != 0 && bufexists(s:plugin_manager_buffer)
+  if s:plugin_manager_buffer != 0 && bufexists(s:plugin_manager_buffer) && s:on_reinstall == 0
     " buffer exist, process has not finished!
     return 0
-  elseif s:plugin_manager_buffer != 0 && !bufexists(s:plugin_manager_buffer)
+  elseif s:plugin_manager_buffer != 0 && !bufexists(s:plugin_manager_buffer) && s:on_reinstall == 0
     " buffer is hidden, process has not finished!
     call s:resume_window()
     return 1
+  elseif s:plugin_manager_buffer != 0 && bufexists(s:plugin_manager_buffer) && s:on_reinstall == 1
+    call setbufvar(s:plugin_manager_buffer, '&ma', 1)
+    let current_nr = winnr()
+    let winnr = bufwinnr(s:plugin_manager_buffer)
+    if winnr > -1
+      exe winnr . 'wincmd w'
+      silent normal! gg"_dG
+      redraw!
+    endif
+    exe current_nr . 'wincmd w'
+    return 3
   else
     execute get(g:, 'spacevim_window', 'vertical topleft new')
     let s:plugin_manager_buffer = bufnr('%')
@@ -550,10 +648,19 @@ function! s:open_plugin_dir() abort
     enew
     exe 'resize ' . &lines * 30 / 100
     let shell = empty($SHELL) ? SpaceVim#api#import('system').isWindows ? 'cmd.exe' : 'bash' : $SHELL
-    if has('nvim')
-      call termopen(shell, {'cwd' : dein#get(keys(plugin)[0]).path})
+    let path = ''
+    if g:spacevim_plugin_manager ==# 'dein'
+      let path = dein#get(keys(plugin)[0]).path
+    elseif g:spacevim_plugin_manager ==# 'neobundle'
+      let path = neobundle#get(keys(plugin)[0]).path
+    elseif g:spacevim_plugin_manager ==# 'vim-plug'
+    endif
+    if has('nvim') && exists('*termopen')
+      call termopen(shell, {'cwd' : path})
+    elseif exists('*term_start')
+      call term_start(shell, {'curwin' : 1, 'term_finish' : 'close', 'cwd' : path})
     else
-      call term_start(shell, {'curwin' : 1, 'term_finish' : 'close', 'cwd' : dein#get(keys(plugin)[0]).path})
+      exe 'VimShell ' .  path
     endif
   endif
 endfunction
@@ -582,7 +689,7 @@ if has('nvim') && exists('*nvim_buf_set_lines')
     endif
     call setbufvar(s:plugin_manager_buffer,'&ma', 0)
   endfunction
-elseif has('python')
+elseif s:VIM_CO.has('python')
   py import vim
   py import string
   " @vimlint(EVL103, 1, a:bufnr)
@@ -640,7 +747,7 @@ else
     endif
     call setbufvar(a:bufnr,'&ma', 0)
   endfunction
-endi
+endif
 
 " Public API: SpaceVim#plugins#manager#terminal {{{
 function! SpaceVim#plugins#manager#terminal() abort
@@ -651,4 +758,4 @@ function! SpaceVim#plugins#manager#terminal() abort
     call s:JOB.stop(str2nr(id))
   endfor
 endfunction
-" }}}f
+" }}}

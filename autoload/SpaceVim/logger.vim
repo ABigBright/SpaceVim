@@ -1,6 +1,6 @@
 "=============================================================================
 " logger.vim --- SpaceVim logger
-" Copyright (c) 2016-2017 Wang Shidong & Contributors
+" Copyright (c) 2016-2019 Wang Shidong & Contributors
 " Author: Wang Shidong < wsdjeg at 163.com >
 " URL: https://spacevim.org
 " License: GPLv3
@@ -9,7 +9,7 @@
 let s:LOGGER = SpaceVim#api#import('logger')
 
 call s:LOGGER.set_name('SpaceVim')
-call s:LOGGER.set_level(1)
+call s:LOGGER.set_level(get(g:, 'spacevim_debug_level', 1))
 call s:LOGGER.set_silent(1)
 call s:LOGGER.set_verbose(1)
 
@@ -52,10 +52,15 @@ endfunction
 
 
 function! SpaceVim#logger#viewLog(...) abort
-  let info = "### SpaceVim Options :\n\n"
-  let info .= "```viml\n"
+  let info = "<details><summary> SpaceVim debug information </summary>\n\n"
+  let info .= "### SpaceVim options :\n\n"
+  let info .= "```toml\n"
   let info .= join(SpaceVim#options#list(), "\n")
   let info .= "\n```\n"
+  let info .= "\n\n"
+
+  let info .= "### SpaceVim layers :\n\n"
+  let info .= SpaceVim#layers#report()
   let info .= "\n\n"
 
   let info .= "### SpaceVim Health checking :\n\n"
@@ -67,7 +72,7 @@ function! SpaceVim#logger#viewLog(...) abort
 
   let info .= s:LOGGER.view(s:LOGGER.level)
 
-  let info .= "\n```\n"
+  let info .= "\n```\n</details>\n\n"
   if a:0 > 0
     if a:1 == 1
       tabnew +setl\ nobuflisted

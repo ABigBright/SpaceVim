@@ -1,16 +1,18 @@
 ---
 title: "SpaceVim lang#php layer"
-description: "This layer adds PHP language support to SpaceVim"
+description: "PHP language support, including code completion, syntax lint and code runner"
 ---
 
-# [SpaceVim Layers:](https://spacevim.org/layers) lang#php
+# [Available Layers](../../) >> lang#php
 
 <!-- vim-markdown-toc GFM -->
 
 - [Description](#description)
 - [Features](#features)
-- [Layer Installation](#layer-installation)
-  - [Requirement](#requirement)
+- [Install](#install)
+- [Key bindings](#key-bindings)
+  - [Jump to definition](#jump-to-definition)
+  - [Running current script](#running-current-script)
 
 <!-- vim-markdown-toc -->
 
@@ -23,17 +25,27 @@ This layer adds PHP language support to SpaceVim.
 - auto-completion
 - syntax checking
 - goto definition
-- refernce finder
+- reference finder
 - lsp support (require [lsp](https://spacevim.org/layers/language-server-protocol/) layer)
 
-## Layer Installation
+## Install
 
-To use this configuration layer, add `call SpaceVim#layers#load('lang#php')` to your custom configuration file.
+To use this configuration layer, update custom configuration file with:
 
-### Requirement
+```toml
+[[layers]]
+  name = "lang#php"
+```
 
-1.  [PHP 5.3+](http://php.net/)
-2.  [PCNTL](http://php.net/manual/en/book.pcntl.php) Extension
-3.  [Msgpack 0.5.7+(for NeoVim)](https://github.com/msgpack/msgpack-php) Extension or [JSON(for Vim 7.4+)](http://php.net/manual/en/intro.json.php) Extension
-4.  [Composer](https://getcomposer.org/) Project
+## Key bindings
 
+### Jump to definition
+
+| Mode   | Key Bindings | Description                                      |
+| ------ | ------------ | ------------------------------------------------ |
+| normal | `g d`        | Jump to the definition position of cursor symbol |
+
+### Running current script
+
+To running a php script, you can press `SPC l r` to run current file without loss focus,
+and the result will be shown in a runner buffer.

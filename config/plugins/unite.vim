@@ -259,7 +259,9 @@ function! s:view_github_starred_repos() abort
     Unite -silent -ignorecase -winheight=17 -start-insert menu:MyStarredrepos
   endif
 endfunction
-call zvim#util#loadMusics()
+if SpaceVim#layers#isLoaded('tools#mpv')
+  call SpaceVim#layers#tools#mpv#loadMusics()
+endif
 augroup unite_buffer_feature
   autocmd FileType unite call s:unite_my_settings()
 augroup END
@@ -286,6 +288,13 @@ function! s:unite_my_settings()
   imap <silent><buffer><expr> <C-s>     unite#do_action('split')
   nmap <silent><buffer><expr> <C-s>     unite#do_action('split')
 
+  " Runs "vsplit" action by <C-v>.
+  imap <silent><buffer><expr> <C-v>     unite#do_action('vsplit')
+  nmap <silent><buffer><expr> <C-v>     unite#do_action('vsplit')
+
+  " Runs "tabopen" action by <C-t>.
+  imap <silent><buffer><expr> <C-t>     unite#do_action('tabopen')
+  nmap <silent><buffer><expr> <C-t>     unite#do_action('tabopen')
 
   imap <buffer> '     <Plug>(unite_quick_match_default_action)
   nmap <buffer> '     <Plug>(unite_quick_match_default_action)

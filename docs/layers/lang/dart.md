@@ -1,15 +1,15 @@
 ---
 title: "SpaceVim lang#dart layer"
-description: "This layer is for dart development, provide autocompletion, syntax checking, code format for dart file."
+description: "This layer is for Dart development, provide autocompletion, syntax checking, code format for Dart file."
 ---
 
-# [SpaceVim Layers:](https://spacevim.org/layers) lang#dart
+# [Available Layers](../../) >> lang#dart
 
 <!-- vim-markdown-toc GFM -->
 
 - [Description](#description)
 - [Features](#features)
-- [Installation](#installation)
+- [Install](#install)
   - [Layer](#layer)
   - [Syntax checking && Code formatting](#syntax-checking--code-formatting)
   - [Install dart-repl](#install-dart-repl)
@@ -23,7 +23,7 @@ description: "This layer is for dart development, provide autocompletion, syntax
 
 ## Description
 
-This layer is for dart development.
+This layer is for Dart development.
 
 ## Features
 
@@ -33,11 +33,16 @@ This layer is for dart development.
 - REPL
 - code runner
 
-## Installation
+## Install
 
 ### Layer
 
-To use this configuration layer, add `call SpaceVim#layers#load('lang#dart')` to your custom configuration file.
+To use this configuration layer, update custom configuration file with:
+
+```toml
+[[layers]]
+  name = "lang#dart"
+```
 
 ### Syntax checking && Code formatting
 
@@ -45,7 +50,7 @@ To enable syntax checking and code formatting in spacevim, you need to install [
 
 ### Install dart-repl
 
-you need to install the dart_repl via pub, pub is a build-in package manager in dart-sdk:
+You need to install the dart_repl via pub, pub is a build-in package manager in dart-sdk:
 
 ```sh
 pub global activate dart_repl
@@ -55,15 +60,15 @@ pub global activate dart_repl
 
 ### Inferior REPL process
 
-Start a `dart.repl` inferior REPL process with `SPC l s i`. 
+Start a `dart.repl` inferior REPL process with `SPC l s i`.
 
 Send code to inferior process commands:
 
-| Key Binding | Description                                      |
-| ----------- | ------------------------------------------------ |
-| `SPC l s b` | send buffer and keep code buffer focused         |
-| `SPC l s l` | send line and keep code buffer focused           |
-| `SPC l s s` | send selection text and keep code buffer focused |
+| Key Bindings | Descriptions                                     |
+| ------------ | ------------------------------------------------ |
+| `SPC l s b`  | send buffer and keep code buffer focused         |
+| `SPC l s l`  | send line and keep code buffer focused           |
+| `SPC l s s`  | send selection text and keep code buffer focused |
 
 ### Running current script
 
@@ -71,9 +76,9 @@ To running a ruby script, you can press `SPC l r` to run current file without lo
 
 ### Code formatting
 
-| Key Binding | Description           |
-| ----------- | --------------------- |
-| `SPC b f`   | format current buffer |
+| Key Bindings | Descriptions          |
+| ------------ | --------------------- |
+| `SPC b f`    | format current buffer |
 
 ## Screenshots
 

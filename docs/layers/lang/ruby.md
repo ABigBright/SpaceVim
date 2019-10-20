@@ -1,14 +1,14 @@
 ---
 title: "SpaceVim lang#ruby layer"
-description: "This layer is for ruby development, provide autocompletion, syntax checking, code format for ruby file."
+description: "This layer is for Ruby development, provide autocompletion, syntax checking, code format for Ruby file."
 ---
 
-# [SpaceVim Layers:](https://spacevim.org/layers) lang#ruby
+# [Available Layers](../../) >> lang#ruby
 
 <!-- vim-markdown-toc GFM -->
 
 - [Description](#description)
-- [Installation](#installation)
+- [Install](#install)
   - [Layer](#layer)
   - [Syntax checking && Code formatting](#syntax-checking--code-formatting)
 - [Key bindings](#key-bindings)
@@ -20,13 +20,18 @@ description: "This layer is for ruby development, provide autocompletion, syntax
 
 ## Description
 
-This layer is for ruby development.
+This layer is for Ruby development.
 
-## Installation
+## Install
 
 ### Layer
 
-To use this configuration layer, add `SPLayer 'lang#ruby'` to your custom configuration file.
+To use this configuration layer, update custom configuration file with:
+
+```toml
+[[layers]]
+  name = "lang#ruby"
+```
 
 ### Syntax checking && Code formatting
 
@@ -41,22 +46,36 @@ gem install rubocop
 
 ### Inferior REPL process
 
-Start a `irb` inferior REPL process with `SPC l s i`. 
+Start a `irb` inferior REPL process with `SPC l s i`. You may change the REPL command by layer option `repl_command`. For example, if you want to use `pry`, load this layer via:
+
+```toml
+[[layers]]
+    name = "lang#ruby"
+    repl_command = "pry"
+```
+
+however, if the executable is not on your $PATH, then you need to specify a complete file path.
+
+```toml
+[[layers]]
+    name = "lang#ruby"
+    repl_command = "/NOT/IN/YOUR/PATH/rubocop"
+```
 
 Send code to inferior process commands:
 
-| Key Binding | Description                                      |
-| ----------- | ------------------------------------------------ |
-| `SPC l s b` | send buffer and keep code buffer focused         |
-| `SPC l s l` | send line and keep code buffer focused           |
-| `SPC l s s` | send selection text and keep code buffer focused |
+| Key Bindings | Descriptions                                     |
+| ------------ | ------------------------------------------------ |
+| `SPC l s b`  | send buffer and keep code buffer focused         |
+| `SPC l s l`  | send line and keep code buffer focused           |
+| `SPC l s s`  | send selection text and keep code buffer focused |
 
 ### RuboCop
 
-| Key Binding | Description                                |
-| ----------- | ------------------------------------------ |
-| `SPC l c f` | Runs RuboCop on the currently visited file |
+| Key Bindings | Descriptions                               |
+| ------------ | ------------------------------------------ |
+| `SPC l c f`  | Runs RuboCop on the currently visited file |
 
 ### Running current script
 
-To running a ruby script, you can press `SPC l r` to run current file without loss focus, and the result will be shown in a runner buffer.
+To running a Ruby script, you can press `SPC l r` to run current file without loss focus, and the result will be shown in a runner buffer.

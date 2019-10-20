@@ -3,7 +3,7 @@ title:  "Development"
 description: "General contributing guidelines and changelog of SpaceVim, including development information about SpaceVim"
 ---
 
-# Development guidelines
+# [Home](../) >> Development
 
 <!-- vim-markdown-toc GFM -->
 
@@ -14,9 +14,10 @@ description: "General contributing guidelines and changelog of SpaceVim, includi
   - [Bootstrap](#bootstrap)
   - [Conventions](#conventions)
   - [Pull Request](#pull-request)
-    - [Rebase your pr Branch on top of upstream master:](#rebase-your-pr-branch-on-top-of-upstream-master)
-    - [Ideally for simple PRs (most of them):](#ideally-for-simple-prs-most-of-them)
-    - [For complex PRs (big refactoring, etc):](#for-complex-prs-big-refactoring-etc)
+    - [Title prefix of pull request](#title-prefix-of-pull-request)
+    - [Rebase on top of upstream master](#rebase-on-top-of-upstream-master)
+    - [Ideally for simple PRs](#ideally-for-simple-prs)
+    - [For complex PRs](#for-complex-prs)
   - [Contributing a layer](#contributing-a-layer)
     - [File header](#file-header)
     - [Author of a new layer](#author-of-a-new-layer)
@@ -29,12 +30,8 @@ description: "General contributing guidelines and changelog of SpaceVim, includi
 
 <!-- vim-markdown-toc -->
 
-SpaceVim is an effort of all the volunteers, we encourage you to pitch in. The community makes SpaceVim what it is.
-We have a few guidelines, which we ask all contributors to follow.
-
-Development happens in the GitHub repository. here is a throughput graph of the repository for the last few weeks:
-
-[![Throughput Graph](https://graphs.waffle.io/SpaceVim/SpaceVim/throughput.svg)](https://waffle.io/SpaceVim/SpaceVim/metrics/throughput)
+SpaceVim is an effort of all the volunteers. We encourage you to pitch in. The community makes SpaceVim what it is.
+We have a few guidelines which we need all contributors to follow.
 
 You can only consider reading the sections relevant to what you are going to do:
 
@@ -47,13 +44,13 @@ You can only consider reading the sections relevant to what you are going to do:
 If you want to ask an usage question, be sure to look first into some places as it may hold the answers:
 
 - <kbd>:h SpaceVim-faq</kbd>: Some of the most frequently asked questions are answered there.
-- [SpaceVim documentation](https://spacevim.org/documentation): It is the general documentation of SpaceVim.
+- [SpaceVim documentation](https://spacevim.org/documentation/): It is the general documentation of SpaceVim.
 
 ## Reporting issues
 
-Issues have to be reported on [issues tracker](https://github.com/SpaceVim/SpaceVim/issues), Please:
+Issues have to be reported on [issues tracker](https://github.com/SpaceVim/SpaceVim/issues), please:
 
-- Check that there is no duplicate issue in the issues tracker, you can search for keywords in the issues tracker.
+- Check that no duplicate issue is in the issues tracker, you can search for keywords in the issues tracker.
 - Check that the issue has not been fixed in latest version of SpaceVim, please update your SpaceVim, and try to reproduce the bug here.
 - Use a clear title and follow the issue template.
 - Include details on how to reproduce it, just like a step by step guide.
@@ -64,7 +61,7 @@ Code contributions are welcome. Please read the following sections carefully. In
 
 ### License
 
-The license is GPLv3 for all the parts of SpaceVim. this includes:
+The license is GPLv3 for all the parts of SpaceVim. This includes:
 
 - The initialization and core files.
 - All the layer files.
@@ -84,29 +81,41 @@ SpaceVim is based on conventions, mainly for naming functions, keybindings defin
 
 ### Pull Request
 
-#### Rebase your pr Branch on top of upstream master:
+#### Title prefix of pull request
 
-- fork SpaceVim repository
-- clone your repository
+Pull request titles should contain one of these prefix:
 
+- `Add:` Adding new features.
+- `Change:` Change default behaviors or the existing features.
+- `Fix:` Fix some bugs.
+- `Remove:` Remove some existing features.
+- `Doc:` Update the help files.
+- `Website:` Update the content of website.
+
+Here is an example:
+
+`Website: Update the lang#c layer page.`
+
+#### Rebase on top of upstream master
+
+- Fork SpaceVim repository
+- Clone your repository
 ```sh
 git clone ${YOUR_OWN_REPOSITORY_URL}
 ```
 
-- add upstream remote
-
+- Add upstream remote
 ```sh
 git remote add upstream https://github.com/SpaceVim/SpaceVim.git
 ```
 
-- fetch upstream and rebase on top of upstream master
-
+- Fetch upstream and rebase on top of upstream master
 ```sh
 git fetch upstream
-git rebase upstream/master master
+git rebase upstream/master
 ```
 
-#### Ideally for simple PRs (most of them):
+#### Ideally for simple PRs
 
 - Branch from `master`
 - One topic per PR
@@ -114,9 +123,9 @@ git rebase upstream/master master
 - If you have several commits on different topics, close the PR and create one PR per topic
 - If you still have several commits, squash them into only one commit
 
-#### For complex PRs (big refactoring, etc):
+#### For complex PRs
 
-Squash only the commits with uninteresting changes like typos, syntax fixes, etc… and keep the important and isolated steps in different commits.
+Squash only the commits with uninteresting changes like typos, syntax fixes, etc. And keep the important and isolated steps in different commits.
 
 Those PRs are merged and explicitly not fast-forwarded.
 
@@ -155,39 +164,39 @@ Further paragraphs come after blank lines.
     - Use a hanging indent
 ```
 
-[Gita] provide vim mode for Git commit messages, which helps you to comply to these guidelines.
+[Gita] provide Vim mode for Git commit messages, which helps you to comply to these guidelines.
 
 ### Contributing a layer
 
 Please read the layers documentation first.
 
-Layer with no associated configuration will be rejected. For instance a layer with just a package and a hook can be easily replaced by the usage of the variable `g:spacevim_custom_plugins`.
+Layer with no associated configuration will be rejected. For instance a layer with just a package and a hook can be easily replaced by the usage of the variable `custom_plugins`.
 
 #### File header
 
-The file header for vim script should look like the following template:
+The file header for Vim script should look like the following template:
 
-```viml
+```vim
 "=============================================================================
 " FILENAME --- NAME layer file for SpaceVim
-" Copyright (c) 2012-2016 Shidong Wang & Contributors
-" Author: YOUR NAME <YOUR EMAIL>
+" Copyright (c) 2016-2019 Wang Shidong & Contributors
+" Author: Wang Shidong < wsdjeg@outlook.com >
 " URL: https://spacevim.org
 " License: GPLv3
 "=============================================================================
 ```
 
-You should replace FILENAME by the name of the file (e.g. foo.vim) and NAME by the name of the layer you are creating, don’t forget to replace **YOUR NAME** and **YOUR EMAIL** also. 
+You should replace FILENAME by the name of the file (e.g. foo.vim) and NAME by the name of the layer you are creating, don’t forget to replace **YOUR NAME** and **YOUR EMAIL** neighter. 
 
 #### Author of a new layer
 
-In the files header, change the default author name (Shidong Wang) to your name.
+In the files header, replace the default author name (Shidong Wang) with your name.
 
-here is an example for creating a new layer names `foo`:
+The following example shows how to create a new layer names `foo`:
 
-1. fork SpaceVim repo
-2. add a layer file `autoload/SpaceVim/layers/foo.vim` for `foo` layer.
-3. edit layer file, check out the example below:
+1. Fork SpaceVim repo.
+2. Add a layer file `autoload/SpaceVim/layers/foo.vim` for `foo` layer.
+3. Edit layer file, check out the example below:
 
 ```vim
 "=============================================================================
@@ -240,32 +249,43 @@ function! SpaceVim#layers#foo#config() abort
   let g:foo_option3 = get(g:, 'foo_option3', 3)
   " ...
 endfunction
+
+" add layer options:
+let s:layer_option = 'default var'
+function! SpaceVim#layers#foo#set_variable(var) abort
+  let s:layer_option = get(a:var, 'layer_option', s:layer_option)
+endfunction
+
+" completion function for layer options:
+function! SpaceVim#layers#foo#get_options() abort
+    return ['layer_option']
+endfunction
 ```
 
 4. Add layer document `docs/layers/foo.md` for `foo` layer.
 5. Open `docs/layers/index.md`, run `:call SpaceVim#dev#layers#update()` to update layer list.
-6. send PR to SpaceVim.
+6. Send PR to SpaceVim.
 
 #### Contributor to an existing layer
 
-If you are contributing to an already existing layer, you should not modify any header file.
+If you want to contribute to an already existing layer, you should not modify any header file.
 
 #### Contributing a keybinding
 
 Mappings are an important part of SpaceVim.
 
-First if you want to have some personal mappings, This can be done in your `~/.SpaceVim.d/init.vim` file.
+First if you want to have some personal mappings. This can be done in your bootstrap function.
 
-If you think it worth contributing a new mappings then be sure to read the documentation to find the best mappings, then create a Pull-Request with your changes.
+If you think it worth contributing new mappings, be sure to read the documentation to find the best mappings, then create a Pull-Request with your mappings.
 
 ALWAYS document your new mappings or mappings changes inside the relevant documentation file.
-It should be the the layer file and the [documentation](../documentation/).
+It should be the layername.md and the [documentation](../documentation/).
 
 ##### Language specified key bindings
 
-All language specified key bindings are started with `SPC l` prefix.
+All language specified key bindings prefix `SPC l`.
 
-we recommended to keep same language specified key bindings for different languages:
+We recommend to keep same language specified key bindings for different languages:
 
 | Key Binding | Description                                      |
 | ----------- | ------------------------------------------------ |
@@ -279,7 +299,7 @@ we recommended to keep same language specified key bindings for different langua
 | `SPC l s l` | send line and keep code buffer focused           |
 | `SPC l s s` | send selection text and keep code buffer focused |
 
-All of these above key bindings are just recommended as default, but it also base on the language layer itself.
+All above key bindings are just recommended as default, but they also base on the language layer itself.
 
 #### Contributing a banner
 
@@ -291,7 +311,7 @@ You are free to choose a reasonable height size but the width size should be aro
 
 ## Build with SpaceVim
 
-SpaceVim provide a lot of public [APIs](../api/), you can create plugins base on this APIs. also you can add a badge to the README.md of your plugin.
+SpaceVim provide a lot of public [APIs](../api/), you can create plugins base on this APIs. Also you can add a badge to the README.md of your plugin.
 
 ![](https://img.shields.io/badge/build%20with-SpaceVim-ff69b4.svg)
 

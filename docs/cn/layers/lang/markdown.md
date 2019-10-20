@@ -1,61 +1,81 @@
 ---
-title: "SpaceVim lang#markdown layer"
-description: "Edit markdown within vim, autopreview markdown in the default browser, with this layer you can also format markdown file."
+title: "SpaceVim lang#markdown 模块"
+description: "这一模块为 Markdown 编辑提供支持，包括格式化、自动生成文章目录、代码块等特性。"
+lang: zh
 ---
 
-# [SpaceVim Layers:](https://spacevim.org/layers) lang#markdown
+# [可用模块](../../) >> lang#markdown
 
 <!-- vim-markdown-toc GFM -->
 
-- [Description](#description)
-- [Layer Installation](#layer-installation)
-- [formatting](#formatting)
-  - [options](#options)
-- [Key bindings](#key-bindings)
+- [模块简介](#模块简介)
+- [启用模块](#启用模块)
+- [代码格式化](#代码格式化)
+- [模块设置](#模块设置)
+- [快捷键](#快捷键)
 
 <!-- vim-markdown-toc -->
 
-## Description
+## 模块简介
 
-This layer is for editing markdown file.
+这一模块为 SpaceVim 提供 Markdown 编辑支持，包括格式化、实时预览、自动生成 TOC 等特性。
 
-## Layer Installation
+## 启用模块
 
-To use this configuration layer, add `call SpaceVim#layers#load('lang#markdown')` to your custom configuration file.
+可通过在配置文件内加入如下配置来启用该模块：
 
-## formatting
+```toml
+[[layers]]
+  name = "lang#markdown"
+```
 
-SpaceVim use remark to formatting markdown file, so you need to install this program. you can install it via npm:
+## 代码格式化
 
+SpaceVim 默认使用 remark 来格式化 Markdown 文件，Windows 下建议使用 [Prettier](https://github.com/prettier/prettier) 来格式化 Markdown 文件。
+
+remark 可通过 [npm](https://www.npmjs.com/get-npm) 命令来安装：
 ```sh
 npm -g install remark
 npm -g install remark-cli
 npm -g install remark-stringify
+npm -g install remark-frontmatter
+npm -g install wcwidth
 ```
 
-### options
+[Prettier](https://github.com/prettier/prettier) 可通过 [yarn](https://yarnpkg.com/lang/zh-hans/docs/install/#windows-stable) 或 [npm](https://www.npmjs.com/get-npm) 命令来安装：
+
+1. 通过 `yarn` 命令来安装
+```sh
+yarn global add prettier
+```
+2. 通过 `npm` 命令来安装
+```sh
+npm install --global prettier
+```
+
+## 模块设置
 
 **listItemIndent**
 
-How to indent the content from list items (`tab`, `mixed` or 1 , default: 1).
+设置有序列表对齐方式 (`tab`, `mixed` 或者 `1` , 默认： `1`)。
 
-- `'tab'`: use tab stops (4 spaces)
-- `'1'`: use one space
+- `'tab'`: 使用 tab stops 对齐
+- `'1'`: 使用空格对齐
 - `'mixed'`: use `1` for tight and `tab` for loose list items
 
 **enableWcwidth**
 
-Enable/Disable wcwidth for detecting the length of a table cell, default is 0. To enable this option, you need to install [wcwidth](https://www.npmjs.com/package/wcwidth)
+启用/禁用表格字符宽度检测，默认未启用该功能。若需要启用该功能，需要额外安装 [wcwidth](https://www.npmjs.com/package/wcwidth)。
 
 **listItemChar**
 
-Bullet marker to use for list items (`'-'`, `'*'`, or `'+'`, default: `'-'`).
+设置无序列表前缀 (`'-'`, `'*'`, or `'+'`, 默认: `'-'`)。
 
+## 快捷键
 
-## Key bindings
-
-| Key        | mode   | description                |
-| ---------- | ------ | -------------------------- |
-| `SPC b f`  | Normal | Format current buffer      |
-| `SPC l ft` | Normal | Format table under cursor  |
-| `SPC l p`  | Normal | Real-time markdown preview |
+| 快捷键     | 模式          | 按键描述                               |
+| ---------- | ------------- | -------------------------------------- |
+| `SPC b f`  | Normal        | 格式化当前文件                         |
+| `SPC l k`  | Normal/Visual | 为光标下的单词或者选中文本增加 URL 链接|
+| `SPC l K`  | Normal/Visual | 为光标下的单词或者选中文本增加图片链接 |
+| `SPC l p`  | Normal        | 通过浏览器实时预览当前文件             |

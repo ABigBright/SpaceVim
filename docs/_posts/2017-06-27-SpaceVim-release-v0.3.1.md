@@ -1,12 +1,13 @@
 ---
 title: SpaceVim release v0.3.1
 categories: [changelog, blog]
-excerpt: "Here you can check what has been done so far."
+excerpt: "New release v0.3.1 provides better key binding guide for buffer and file, including z and g prefix guide."
 type: NewsArticle
+commentsID: "SpaceVim release v0.3.1"
 comments: true
 ---
 
-# [Changelogs](https://spacevim.org/development#changelog) > SpaceVim release v0.3.1
+# [Changelogs](../development#changelog) > SpaceVim release v0.3.1
 
 **Install:**  https://github.com/SpaceVim/SpaceVim/wiki/Installing-SpaceVim
 

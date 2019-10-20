@@ -11,7 +11,7 @@ echo "       \______/| ##____/ \_______/\_______/\_______/   \_/   |__|__/ |__/ 
 echo "               | ##                                                           "
 echo "               | ##                                                           "
 echo "               |__/                                                           "
-echo "                    版本 : 0.8.0-dev  中文官网 : https://spacevim.org/cn/     "
+echo "                      版本 : 1.2.0    中文官网 : https://spacevim.org/cn/     "
 
 Push-Location ~
 
@@ -89,7 +89,7 @@ if (!(Test-Path "$HOME\vimfiles")) {
 
 echo ""
 if (!(Test-Path "$HOME\AppData\Local\nvim")) {
-  cmd /c mklink $HOME\AppData\Local\nvim $repo_path
+  cmd /c mklink "$HOME\AppData\Local\nvim" $repo_path
   echo "[OK] 已为 neovim 安装 SpaceVim"
   sleep 1
 } else {
@@ -108,4 +108,4 @@ echo ""
 
 Pause
 
-# vim:set ft=ps1 nowrap: 
+# vim:set ft=powershell nowrap: 

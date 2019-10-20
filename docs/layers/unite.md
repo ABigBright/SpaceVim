@@ -3,11 +3,30 @@ title: "SpaceVim unite layer"
 description: "This layers provide a heavily customized Unite centric work-flow"
 ---
 
-# [SpaceVim Layers:](https://spacevim.org/layers) unite
+# [Available Layers](../) >> unite
 
-## Intro
+<!-- vim-markdown-toc GFM -->
+
+- [Description](#description)
+- [Install](#install)
+- [Configuration](#configuration)
+- [Key bindings](#key-bindings)
+
+<!-- vim-markdown-toc -->
+
+## Description
 
 This layer is a heavily customized wrapper for unite.vim and unite sources.
+
+## Install
+
+
+To use this configuration layer, update custom configuration file with:
+
+```toml
+[[layers]]
+  name = "unite"
+```
 
 ## Configuration
 
@@ -17,7 +36,7 @@ This is a fuzzy finder layer for SpaceVim, and it is based on unite.vim. In Spac
 
 | Key bindings         | Discription                   |
 | -------------------- | ----------------------------- |
-| `<Leader> f <space>` | Fuzzy find menu:CustomKeyMaps |
+| `<Leader> f <Space>` | Fuzzy find menu:CustomKeyMaps |
 | `<Leader> f e`       | Fuzzy find register           |
 | `<Leader> f h`       | Fuzzy find history/yank       |
 | `<Leader> f j`       | Fuzzy find jump, change       |

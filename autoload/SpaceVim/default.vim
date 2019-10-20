@@ -1,6 +1,6 @@
 "=============================================================================
 " default.vim --- default options in SpaceVim
-" Copyright (c) 2016-2017 Wang Shidong & Contributors
+" Copyright (c) 2016-2019 Wang Shidong & Contributors
 " Author: Wang Shidong < wsdjeg at 163.com >
 " URL: https://spacevim.org
 " License: GPLv3
@@ -12,7 +12,7 @@ let s:SYSTEM = SpaceVim#api#import('system')
 
 " Default options {{{
 function! SpaceVim#default#options() abort
-  " basic vim settiing
+  " basic vim settings
   if has('gui_running')
     set guioptions-=m " Hide menu bar.
     set guioptions-=T " Hide toolbar
@@ -142,7 +142,6 @@ function! SpaceVim#default#layers() abort
   call SpaceVim#layers#load('core#banner')
   call SpaceVim#layers#load('core#statusline')
   call SpaceVim#layers#load('core#tabline')
-  call SpaceVim#layers#load('sudo')
 endfunction
 
 function! SpaceVim#default#keyBindings() abort
@@ -150,63 +149,56 @@ function! SpaceVim#default#keyBindings() abort
     inoremap <silent> <Leader><Tab> <C-r>=MyLeaderTabfunc()<CR>
   endif
 
-  " yark and paste
-  xnoremap <Leader>y "+y
-  xnoremap <Leader>d "+d
-  nnoremap <Leader>p "+p
-  nnoremap <Leader>P "+P
-  xnoremap <Leader>p "+p
-  xnoremap <Leader>P "+P
+  " yank and paste
+  if has('unnamedplus')
+    xnoremap <Leader>y "+y
+    xnoremap <Leader>d "+d
+    nnoremap <Leader>p "+p
+    let g:_spacevim_mappings.p = ['normal! "+p', 'paste after here']
+    nnoremap <Leader>P "+P
+    let g:_spacevim_mappings.P = ['normal! "+P', 'paste before here']
+    xnoremap <Leader>p "+p
+    xnoremap <Leader>P "+P
+  else
+    xnoremap <Leader>y "*y
+    xnoremap <Leader>d "*d
+    nnoremap <Leader>p "*p
+    let g:_spacevim_mappings.p = ['normal! "*p', 'paste after here']
+    nnoremap <Leader>P "*P
+    let g:_spacevim_mappings.P = ['normal! "*P', 'paste before here']
+    xnoremap <Leader>p "*p
+    xnoremap <Leader>P "*P
+  endif
 
-
-  " Location list movement
-  let g:_spacevim_mappings.l = {'name' : '+Location movement'}
-  call SpaceVim#mapping#def('nnoremap', '<Leader>lj', ':lnext<CR>',
-        \ 'Jump to next location list position',
-        \ 'lnext',
-        \ 'Next location list')
-  call SpaceVim#mapping#def('nnoremap', '<Leader>lk', ':lprev<CR>',
-        \ 'Jump to previous location list position',
-        \ 'lprev',
-        \ 'Previous location list')
-  call SpaceVim#mapping#def('nnoremap', '<Leader>lq', ':lclose<CR>',
-        \ 'Close the window showing the location list',
-        \ 'lclose',
-        \ 'Close location list window')
 
   " quickfix list movement
   let g:_spacevim_mappings.q = {'name' : '+Quickfix movement'}
-  call SpaceVim#mapping#def('nnoremap', '<Leader>qj', ':cnext<CR>',
+  call SpaceVim#mapping#def('nnoremap', '<Leader>qn', ':cnext<CR>',
         \ 'Jump to next quickfix list position',
         \ 'cnext',
         \ 'Next quickfix list')
-  call SpaceVim#mapping#def('nnoremap', '<Leader>qk', ':cprev<CR>',
+  call SpaceVim#mapping#def('nnoremap', '<Leader>qp', ':cprev<CR>',
         \ 'Jump to previous quickfix list position',
         \ 'cprev',
         \ 'Previous quickfix list')
-  call SpaceVim#mapping#def('nnoremap', '<Leader>qq', ':cclose<CR>',
-        \ 'Close quickfix list window',
-        \ 'cclose',
-        \ 'Close quickfix list window')
+  call SpaceVim#mapping#def('nnoremap', '<Leader>ql', ':copen<CR>',
+        \ 'Open quickfix list window',
+        \ 'copen',
+        \ 'Open quickfix list window')
   call SpaceVim#mapping#def('nnoremap <silent>', '<Leader>qr', 'q',
         \ 'Toggle recording',
         \ '',
         \ 'Toggle recording mode')
+  call SpaceVim#mapping#def('nnoremap <silent>', '<Leader>qc', ':call setqflist([])<CR>',
+        \ 'Clear quickfix list',
+        \ '',
+        \ 'Clear quickfix')
 
   " Use Ctrl+* to jump between windows
   nnoremap <silent><C-Right> :<C-u>wincmd l<CR>
   nnoremap <silent><C-Left>  :<C-u>wincmd h<CR>
   nnoremap <silent><C-Up>    :<C-u>wincmd k<CR>
   nnoremap <silent><C-Down>  :<C-u>wincmd j<CR>
-  if has('nvim')
-    exe 'tnoremap <silent><C-Right> <C-\><C-n>:<C-u>wincmd l<CR>'
-    exe 'tnoremap <silent><C-Left>  <C-\><C-n>:<C-u>wincmd h<CR>'
-    exe 'tnoremap <silent><C-Up>    <C-\><C-n>:<C-u>wincmd k<CR>'
-    exe 'tnoremap <silent><C-Down>  <C-\><C-n>:<C-u>wincmd j<CR>'
-    exe 'tnoremap <silent><M-Left>  <C-\><C-n>:<C-u>bprev<CR>'
-    exe 'tnoremap <silent><M-Right>  <C-\><C-n>:<C-u>bnext<CR>'
-    exe 'tnoremap <silent><esc>     <C-\><C-n>'
-  endif
 
 
   "Use jk switch to normal mode
@@ -226,9 +218,6 @@ function! SpaceVim#default#keyBindings() abort
   inoremap <silent><C-S-Up> <Esc>:m .-2<CR>==gi
   vnoremap <silent><C-S-Down> :m '>+1<CR>gv=gv
   vnoremap <silent><C-S-Up> :m '<-2<CR>gv=gv
-  " download gvimfullscreen.dll from github, copy gvimfullscreen.dll to
-  " the directory that has gvim.exe
-  nnoremap <F11> :call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)<cr>
 
   " Start new line
   inoremap <S-Return> <C-o>o
@@ -259,14 +248,7 @@ function! SpaceVim#default#keyBindings() abort
 
   " Navigate window
   nnoremap <silent><C-q> <C-w>
-  if !g:spacevim_vimcompatible
-    nnoremap <silent><C-x> <C-w>x
-  endif
 
-  " Navigation in command line
-  cnoremap <C-a> <Home>
-  cnoremap <C-b> <Left>
-  cnoremap <C-f> <Right>
 
 
   " Fast saving
@@ -297,28 +279,30 @@ function! SpaceVim#default#keyBindings() abort
   nnoremap <silent><M-3> :<C-u>call <SID>tobur(3)<CR>
   nnoremap <silent><M-4> :<C-u>call <SID>tobur(4)<CR>
   nnoremap <silent><M-5> :<C-u>call <SID>tobur(5)<CR>
-  nnoremap <silent><M-Right> :<C-U>call <SID>tobur("bnext")<CR>
-  nnoremap <silent><M-Left> :<C-U>call <SID>tobur("bprev")<CR>
+  nnoremap <silent><M-Right> :<C-U>call <SID>tobur("next")<CR>
+  nnoremap <silent><M-Left> :<C-U>call <SID>tobur("prev")<CR>
 
-  call SpaceVim#mapping#def('nnoremap <silent>','<M-x>',':call chat#qq#OpenMsgWin()<cr>',
-        \ 'Open qq chatting room','call chat#chatting#OpenMsgWin()')
-  call SpaceVim#mapping#def('nnoremap <silent>','<M-w>',':call chat#weixin#OpenMsgWin()<cr>',
-        \ 'Open weixin chatting room','call chat#chatting#OpenMsgWin()')
-  call SpaceVim#mapping#def('nnoremap <silent>','<M-c>',':call chat#chatting#OpenMsgWin()<cr>',
-        \ 'Open chatting room','call chat#chatting#OpenMsgWin()')
+  call SpaceVim#mapping#def('nnoremap <silent>','g=',':call SpaceVim#mapping#format()<cr>','format current buffer','call SpaceVim#mapping#format()')
 
-  call SpaceVim#mapping#def('nnoremap <silent>','g=',':call zvim#format()<cr>','format current buffer','call zvim#format')
-
-  call SpaceVim#mapping#def('nnoremap <silent>', '<C-c>', ':<c-u>call zvim#util#CopyToClipboard()<cr>',
-        \ 'Copy buffer absolute path to X11 clipboard','call zvim#util#CopyToClipboard()')
+  call SpaceVim#mapping#def('nnoremap <silent>', '<C-c>', ':<c-u>call SpaceVim#util#CopyToClipboard()<cr>',
+        \ 'Copy buffer absolute path to X11 clipboard','call SpaceVim#util#CopyToClipboard()')
 endfunction
 
 fu! s:tobur(num) abort
-  if index(get(g:,'spacevim_altmoveignoreft',[]), &filetype) == -1
-    if a:num ==# 'bnext'
-      bnext
-    elseif a:num ==# 'bprev'
-      bprev
+  if index(get(g:,'_spacevim_altmoveignoreft',[]), &filetype) == -1
+    if a:num ==# 'next'
+      if tabpagenr('$') > 1
+        tabnext
+      else
+        bnext
+      endif
+
+    elseif a:num ==# 'prev'
+      if tabpagenr('$') > 1
+        tabprevious
+      else
+        bprev
+      endif
     else
       let ls = split(execute(':ls'), "\n")
       let buffers = []

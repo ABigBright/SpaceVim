@@ -1,6 +1,6 @@
 "=============================================================================
 " puppet.vim --- SpaceVim lang#puppet layer
-" Copyright (c) 2016-2017 Wang Shidong & Contributors
+" Copyright (c) 2016-2019 Wang Shidong & Contributors
 " Author: Wang Shidong < wsdjeg at 163.com >
 " URL: https://spacevim.org
 " License: GPLv3
@@ -20,7 +20,7 @@
 
 function! SpaceVim#layers#lang#puppet#plugins() abort
     let plugins = []
-    call add(plugins, ['voxpupuli/vim-puppet', { 'on_ft' : 'puppet', 'loadconf_before' : 1}])
+    call add(plugins, ['rodjek/vim-puppet', { 'on_ft' : 'puppet', 'loadconf_before' : 1}])
     return plugins
 endfunction
 

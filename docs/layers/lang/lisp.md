@@ -1,15 +1,31 @@
 ---
 title: "SpaceVim lang#lisp layer"
-description: "This layer is for lisp development, provide autocompletion, syntax checking, code format for lisp file."
+description: "This layer is for Lisp development, provide autocompletion, syntax checking, code format for Lisp file."
 ---
 
-# [Layers](../../) > lang#lisp
+# [Available Layers](../../) >> lang#lisp
 
-This layer is for lisp development.
+<!-- vim-markdown-toc GFM -->
+
+- [Description](#description)
+- [Install](#install)
+- [Requirement](#requirement)
+- [mappings](#mappings)
+
+<!-- vim-markdown-toc -->
+
+## Description
+
+This layer is for Lisp development.
 
 ## Install
 
-To include this layer, add `SPLayer 'lang#lisp'` to your custom configuration file.
+To use this configuration layer, update custom configuration file with:
+
+```toml
+[[layers]]
+  name = "lang#lisp"
+```
 
 
 ## Requirement
@@ -21,4 +37,4 @@ To include this layer, add `SPLayer 'lang#lisp'` to your custom configuration fi
 
 ## mappings
 
-all the language special mappings is begin with `[SPC] l`, please checkout it in mapping guide.
+All the language special mappings begin with `[SPC] l`, please checkout it in mapping guide.

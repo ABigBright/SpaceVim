@@ -3,17 +3,19 @@ title: "SpaceVim VersionControl layer"
 description: "This layers provides general version control feature for vim. It should work with all VC backends such as Git, Mercurial, Bazaar, SVN, etc…"
 ---
 
-# [SpaceVim Layers:](https://spacevim.org/layers) VersionControl
+# [Available Layers](../) >> VersionControl
 
 <!-- vim-markdown-toc GFM -->
 
-- [Intro](#intro)
+- [Description](#description)
 - [Features](#features)
+- [Install](#install)
+- [Layer options](#layer-options)
 - [Key bindings](#key-bindings)
 
 <!-- vim-markdown-toc -->
 
-## Intro
+## Description
 
   This layer provides general function for version control. It should work with all VC backends such as Git, Mercurial, Bazaar, SVN, etc…
 
@@ -21,6 +23,21 @@ description: "This layers provides general version control feature for vim. It s
 
 - Show a diff using Vim its sign column
 - Show vcs info on statusline
+
+## Install
+
+
+To use this configuration layer, update custom configuration file with:
+
+```toml
+[[layers]]
+  name = "VersionControl"
+```
+
+## Layer options
+
+`enable-gtm-status`: Enable diplaying time spent within SpaceVim's statusline. This feature need [gtm](https://github.com/git-time-metric/gtm) command to be installed.
+
 
 ## Key bindings
 

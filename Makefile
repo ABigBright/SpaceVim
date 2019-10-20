@@ -1,10 +1,10 @@
 test: build/vader | build
-	vim -Nu test/vimrc -c 'Vader! test/**'
+	$(VIM_BIN) -Nu test/vimrc -c 'Vader! test/**'
 
 COVIMERAGE=$(shell command -v covimerage 2>/dev/null || echo build/covimerage/bin/covimerage)
 
 test_coverage: $(COVIMERAGE) build/vader | build
-	$(COVIMERAGE) run vim -Nu test/vimrc -c 'Vader! test/**'
+	$(COVIMERAGE) run $(VIM_BIN) -Nu test/vimrc -c 'Vader! test/**'
 
 build/covimerage:
 	virtualenv $@

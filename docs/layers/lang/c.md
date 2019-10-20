@@ -1,9 +1,9 @@
 ---
 title: "SpaceVim lang#c layer"
-description: "c/c++/object-c language support for SpaceVim, include code completion, jump to definition, quick runner."
+description: "C/C++/Object-C language support for SpaceVim, include code completion, jump to definition, quick runner."
 ---
 
-# [Layers](../../) > lang#c
+# [Available Layers](../../) >> lang#c
 
 <!-- vim-markdown-toc GFM -->
 
@@ -21,7 +21,12 @@ description: "c/c++/object-c language support for SpaceVim, include code complet
 
 ## Install
 
-To use this configuration layer, add `call SpaceVim#layers#load('lang#c')` to your custom configuration file.
+To use this configuration layer, update custom configuration file with:
+
+```toml
+[[layers]]
+  name = "lang#c"
+```
 
 ## Features
 
@@ -31,15 +36,21 @@ To use this configuration layer, add `call SpaceVim#layers#load('lang#c')` to yo
 
 ## Configuration
 
+- `enable_clang_syntax_highlight` (boolean)
+
+Enable/Disable clang based syntax highlighting.
+
 - `clang_executable` (string)
 
-set the path to the clang executable
+Set the path to the clang executable
 
 - `libclang_path` (string)
 
-The libclang shared object (dynamic library) file path. by default it is empty.
+The libclang shared object (dynamic library) file path. By default it is empty.
 
 - `clang_std` (dict)
+
+A dict containing the standards you want to use. The default is:
 
 ```json
 {
@@ -54,8 +65,26 @@ The libclang shared object (dynamic library) file path. by default it is empty.
 
 Create a `.clang` file at your project root. You should be able to just paste most of your compile flags in there. You can also use a list ['-Iwhatever', ...] when loadding this layer.
 
+Here is an example how to use above options:
+
+```toml
+[[layers]]
+  name = "lang#c"
+  clang_executable = "/usr/bin/clang"
+  [layer.clang_std]
+    c = "c11"
+    cpp = "c++1z"
+    objc = "c11"
+    objcpp = "c++1z"
+```
+
+
 ## Key bindings
 
-| key binding | description                  |
-| ----------- | ---------------------------- |
-| `SPC l r`   | compile and run current file |
+| key bindings | Descriptions                 |
+| ------------ | ---------------------------- |
+| `SPC l d`    | show documentation           |
+| `SPC l e`    | rename symbol                |
+| `SPC l f`    | references                   |
+| `SPC l r`    | compile and run current file |
+| `g d`        | defintion preview            |

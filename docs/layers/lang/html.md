@@ -3,12 +3,12 @@ title: "SpaceVim lang#html layer"
 description: "Edit html in SpaceVim, with this layer, this layer provides code completion, syntax checking and code formatting for html."
 ---
 
-# [SpaceVim Layers:](https://spacevim.org/layers) lang#html
+# [Available Layers](../../) >> lang#html
 
 <!-- vim-markdown-toc GFM -->
 
 - [Description](#description)
-- [Layer Installation](#layer-installation)
+- [Install](#install)
   - [Language server](#language-server)
 - [Features](#features)
 - [Key bindings](#key-bindings)
@@ -19,9 +19,14 @@ description: "Edit html in SpaceVim, with this layer, this layer provides code c
 
 This layer adds support for editing HTML and CSS.
 
-## Layer Installation
+## Install
 
-To use this configuration layer, add `call SpaceVim#layers#load('lang#html')` to your custom configuration file.
+To use this configuration layer, update custom configuration file with:
+
+```toml
+[[layers]]
+  name = "lang#html"
+```
 
 ### Language server
 
@@ -37,10 +42,10 @@ npm install --global vscode-html-languageserver-bin
 - Tags navigation on key % using matchit.vim
 - auto-completion
 - syntax checking
-- language server protocol (need `lsp` layer) 
+- language server protocol (need `lsp` layer)
 
 ## Key bindings
 
-| key bindings | Description  |
+| Key Bindings | Descriptions |
 | ------------ | ------------ |
-| `<C-e>`      | emmet prefix |
+| `Ctrl-e`     | emmet prefix |
